@@ -1,0 +1,21 @@
+.blogarchive-title {
+	font-size: 30px;
+}
+
+.blogarchive-title a:hover {
+	text-decoration: none;
+}
+
+.blogarchive-date {
+	font-style: italic;
+	font-size: 15px;
+	margin-bottom: 10px;
+}
+
+.blogarchive-post {
+	border-bottom: 1px solid #DDDDDD;
+}
+
+.blogarchive {
+	min-height: 700px;
+}

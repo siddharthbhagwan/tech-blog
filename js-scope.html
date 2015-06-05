@@ -1,0 +1,132 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+
+  <title>Javascript Scope</title>
+
+  <!-- css -->
+  <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"/>
+  <link rel="stylesheet" href="/css/application.css"> 
+  <link rel="stylesheet" href="/css/blogpost.css">
+  
+  <!-- js -->
+  <script src="/js/bootstrap.min.js"></script>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+
+</head>
+<body>
+  <header>
+    <div class="logo-div">
+      <span class="header-text">| CoderBear's Blog |</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="col-md-10 col-md-offset-1 blogpost">
+      <div class="blogpost-title">
+        Understanding scope in Javascript
+      </div>
+      <div class="blogpost-date">
+        June 5, 2015
+      </div>
+      <p>
+        Let us try and better understand how scoping works in javascript. Scope in JS is functional, which means that a variable declared within the scope of a function is access only within the function.
+      </p>
+
+        <code>
+          <pre>
+
+  msg = 'Global';
+
+  function testScope(){
+    console.log('Printing inside the scope - ' + msg);
+  }
+
+  testScope();
+          </pre>
+        </code>
+        <a href="http://jsbin.com/layeda/3/edit?js,console" target="_blank">Try it in JSBin</a><br/><br/>
+
+        <p>
+          Variables declared without the prefix <code>var</code> are treated as global variables. No surprises here, the console logs the message <code>Printing inside the scope - Global</code> as there is no local variable <code>msg</code>.
+        </p>
+
+        <code>
+          <pre>
+
+  function testScope(){
+    var msg = 'Local';
+    console.log('Printing inside the scope - ' + msg);
+  }
+  
+  testScope();
+          </pre>
+        </code>
+        <a href="http://jsbin.com/cikuwi/4/edit?js,console" target="_blank">Try it in JSBin</a><br/><br/>
+
+        <p>Local variables take precedence over global ones, and so the console logs the message <code>Printing inside the scope - Local</code>, as it is able to find a local <code>msg</code>.</p>
+
+        <code>
+          <pre>
+
+  msg = 'Global';
+  
+  function testScope(){
+    console.log('Printing inside the scope - ' + msg);
+    var msg = 'Local';
+    console.log('Printing inside the scope - ' + msg);
+  }
+  
+  testScope();
+          </pre>
+        </code>
+        <a href="http://jsbin.com/dumapu/4/edit?js,console" target="_blank">Try it in JSBin</a><br/><br/>
+
+        <p>This code has a gotcha. It is expected that the first message would log as <code>Global</code>, since there's no local <code>msg</code> yet, and once <code>msg</code> is declared, the second message is logged as <code>Local</code>. However, as mentioned earlier, JS has functional scope. The variable declaration is hoisted, but the initialization is not.</p>
+
+        <p>For those unfamiliar with the concept of hoisting, in a nutshell, hoisting means that declarations like <code>var x; var y;</code>, regardless of where they are placed in a block of code, are hoisted to the top of the scope. So just because <code>msg</code> is declared after the first <code>console.log</code>, this doesn't mean that the console is not aware of the existence of an <code>msg</code>. Due to hoisting, the scope is quite aware that <code>msg</code> exists.</p>
+
+        <p><strong>So why doesn't it log <code>Local</code> in the console? </strong></p>
+
+        <p>This is because only variable declarations are hoisted, and not initializations. So a <code>var x = 7;</code> is hoisted to the top of the scope as <code>var x = undefined;</code> while the inititalization of <code>x = 7;</code> shall still take place only after the first <code>console.log</code></p>
+
+        <p>Thus, due to hoisting the above code is equivalent to the following code, which explains why the console logs the messages the way it does.</p>
+
+        <code>
+          <pre>
+  msg = 'Global';
+
+  function testScope(){
+    var msg = 'undefined';
+    console.log('Printing inside the scope - ' + msg);
+    msg = 'Local';
+    console.log('Printing inside the scope - ' + msg);
+  }
+
+  testScope();
+          </pre>
+        </code>
+        <a href="http://jsbin.com/fifahe/3/edit?js,console" target="_blank">Try it in JSBin</a>
+      </div>
+    </div>
+
+  <footer>
+    <div class="bottombar">
+      <div class="bottombar-innerdiv">
+        <div class="col-md-12 socialicons">
+          <ul>
+            <li><a href="https://twitter.com/siddhartha_b" target="_blank"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="mailto:siddharthabhagwan@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="https://github.com/siddharthbhagwan" target="_blank"><i class="fa fa-github"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

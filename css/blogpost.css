@@ -1,0 +1,25 @@
+.blogpost {
+	font-size: 18px;
+	margin-bottom: 25px;
+}
+
+pre {
+	background-color: white;
+}
+
+code {
+	color: black;
+	font-size: 13px;
+	text-align: left;
+}
+
+.blogpost-title {
+	font-size: 40px;
+	font-weight: bold;
+}
+
+.blogpost-date {
+	font-style: italic;
+	font-size: 15px;
+	margin-bottom: 30px;
+}
