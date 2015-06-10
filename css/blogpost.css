@@ -23,3 +23,28 @@ code {
 	font-size: 15px;
 	margin-bottom: 30px;
 }
+
+.fa-bordered {
+	border: 1px solid #DDDDDD;
+	padding: 10px;
+	border-radius: 5px;
+}
+
+.share {
+	border: 1px solid #DDDDDD;
+	border-radius: 5px;
+	padding:15px;
+	margin-top: 15px;
+}
+
+.share > .row {
+	margin-top: 5px;
+}
+
+.tw-sh {
+	color: #55acee;
+}
+
+.fb-sh {
+	color: #3b5998;
+}
