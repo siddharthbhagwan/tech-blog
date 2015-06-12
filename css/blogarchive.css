@@ -15,3 +15,12 @@
 .blogarchive-post {
 	border-bottom: 1px solid #DDDDDD;
 }
+
+.blogpost-desc {
+	font-size: 15px;
+	margin-bottom: 15px;
+}
+
+.blogpost-pointer {
+	font-size: 15px;
+}
