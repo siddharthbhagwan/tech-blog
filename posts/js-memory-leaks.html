@@ -1,0 +1,198 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+
+  <title>Memory leaks in JavaScript</title>
+
+  <!-- css -->
+  <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"/>
+  <link rel="stylesheet" href="../css/application.css"> 
+  <link rel="stylesheet" href="../css/blogpost.css">
+  
+  <!-- js -->
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+
+</head>
+<body>
+  <header>
+    <div class="logo-div">
+      <span class="header-text">| CoderBear's Blog |</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="col-md-10 col-md-offset-1 blogpost">
+      <div class="blogpost-title">
+        Memory leaks in JavaScript
+      </div>
+      <div class="blogpost-date">
+        June 18, 2015
+      </div>
+      <p>
+        <strong>What are memory leaks?</strong><br/>
+        When a block of memory that is no longer required is unable to be released, you have a memory leak. 
+      <p><br/>
+
+      <p>
+        <strong>Okay, so what happens when I have a memory leak?</strong><br/>
+        Over time, typically on single page apps, the page starts to eat up a lot of memory. It starts getting slow. Depending on your system configuration, the browser may hang, perhaps eventually crash.
+      </p><br/>
+
+      <p>
+        <strong>Why won’t the JavaScript Garbage Collector (JS GC) or Browser fix it?</strong><br/>
+        It can, and it does, but only partly. Leaks come from various sources - add ons, certain edge cases in the browser's GC implementation. But the major source of such leaks often resides in our code. In that case, the GC becomes pretty helpless, and its up to us to write better code.
+      </p><br/>
+
+      <p>I came across this definition on SO by <a href="http://stackoverflow.com/users/7988/artificialidiot">artificalidiot</a> - </p>
+
+      <p>
+        <strong>'There are two definitions of memory leaks (at least for me):</strong><br/>
+
+        Naive one: Failure to release unreachable memory, which can no longer be allocated again by any process during execution of allocating process. It can mostly be cured by using GC techniques or detected by automated tools.
+      </p>
+
+      <p>
+        Subtle one: Failure to release reachable memory, which is no longer needed for your program to function correctly. It is nearly impossible to be detected by automated tools or programmers who is not too familiar with the code. While technically it is not a leak, it has the same implications of the naive one. This is not my own idea only. You can come across projects that are written in a garbage collected language but still mentions fixing memory leaks in their changelogs.'
+      </p><br/>
+
+      <p>
+        So in a nutshell, the idea is to identify certain code crevices which lead to memory leaks, understand the workings of the components involved, and finally see the corresponding fixes to avoid such crevices.
+      </p><br/>
+
+      <p>
+        <strong>Le us start by understanding how the JavaScript Garbage collector works</strong><br/>
+
+        The way the JS GC works is, once an element is not referred to by any other element, or it isn’t reachable via a path, it is deemed no longer required, and is garbage collected. While this seems logical and simple enough, I would highly encourage you to play around with this example out yourself to get a feel of how things actually work.
+      <p>
+
+      <code>
+        <pre>
+
+  &lt;!-- HTML code --&gt;
+  &lt;html&gt;
+  &lt;head&gt;
+  &lt;meta name="description" content="Garbage Colelction in JS 1"&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;JS Bin&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="id"&gt;Some Data&lt;/div&gt;
+  &lt;/body&gt;
+  &lt;/html&gt;
+        </pre>
+      </code>
+
+      <code>
+        <pre>
+
+  // JS code
+
+  function testFunction(title) {
+    this.title = title;
+    this.elem = document.getElementById('id');
+  }
+
+  var firstObject = new testFunction('My Menu');
+
+  console.log('1 - Title is ' + firstObject.title);
+  console.log('2 - Elem is ' + firstObject.elem);
+
+  document.body.innerHTML = '';
+
+  console.log('3 - Title remains ' + firstObject.title);
+  console.log('4 - Note that Elem too remains ' + firstObject.elem);
+
+  firstObject.elem.innerHTML = 'New Data';
+  console.log('5 - You can play around with Elem ' + firstObject.elem);
+  console.log('6 - Elem is not attached to the DOM anymore though, its parent is - ' + firstObject.elem.parent)
+
+  secondObject = new testFunction('His menu');
+
+  console.log('7 - New title ' + secondObject.title);
+  console.log('8 - New Elem is ' + secondObject.elem);
+        </pre>
+      </code>
+
+      <p>
+        We’re creating an object <code>firstObject</code>, with two properties. The second property, <code>elem</code>, points to an object in the DOM. Logs number <code>1</code> and <code>2</code> are pretty straightforward. Next, we clear up the DOM completely, thus removing the element <code>elem</code> points to. While log <code>3</code> is normal, note how log number <code>4</code> still points to the previously existing element i.e, <code>&lt;div id="id"&gt;&lt;/div&gt;</code>. <em>Since <code>elem</code> is still being referred to, it won’t be garbage collected</em>.
+      </p>
+
+      <p>
+       Also note how you can still manipulate <code>menu.elem</code> but it won’t reflect in the DOM. Thats because the body has been wiped clean by the statement <code>document.body.innerHTML = '';</code>. The <code>elem</code> now will infact incorporate the change to its <code>innerHTML</code>, but it won't be visible as it is now a stand alone element, an 'orphaned' element so to say. This is confirmed by log number <code>6</code>. For curiosity's sake, you can comment out the line <code>document.body.innerHTML = '';</code> and watch the html then respond to changes made by <code>firstObject.elem.innerHTML = 'New Data';</code>.
+      </p><br/>
+
+      <p>
+        Next, we create a new object, and log number <code>7</code> is as expected. <code>elem</code> will now be looked up in the DOM, searching for an element with id <code>id</code> and finding none, will be assigned null. The previous <code>elem</code> will now be available for garbage collection.
+      </p><br/>
+
+      <p>
+        <a class="jsbin-embed" href="http://jsbin.com/jetegajenu/embed?html,js,console,output">JS Bin on jsbin.com</a><script src="http://static.jsbin.com/js/embed.js"></script>
+      </p>
+
+      <br/><p>In the next post, I shall describe more such cases, following which we'll take a look at how to avoid/handle such unintended traps</p>
+
+      <br/><p>Feel free to get back to me with any doubts or clarifications. I shall try my best to answer each one of them personally.</p>
+
+      <div class="share">
+        <center>Someone else might find it helpful too!</center>
+        <div class="row">
+          <div class="col-md-2 col-md-offset-4 col-xs-6">
+            <a href="https://twitter.com/intent/tweet?text=Understanding scope in JS - CoderBear - http://blog.coderbear.com/posts/js-memory-leaks.html" target="_blank"><i class="fa fa-lg fa-twitter fa-bordered tw-sh"></i></a> Tweet
+          </div>
+
+          <div class="col-md-2 col-xs-6">
+            <a href="http://www.facebook.com/sharer/sharer.php?s=100&amp;p[url]=http://blog.coderbear.com/posts/js-memory-leaks.html" target="_blank"><i class="fa fa-lg fa-facebook fa-bordered fb-sh"></i></a> Post
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8 col-md-offset-2">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'coderbearblog';
+        
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </script>
+
+  <footer>
+    <div class="bottombar">
+      <div class="bottombar-innerdiv">
+        <div class="col-md-12 socialicons">
+          <ul>
+            <li><a href="https://twitter.com/siddhartha_b" target="_blank"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="mailto:siddharthabhagwan@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="https://github.com/siddharthbhagwan" target="_blank"><i class="fa fa-github"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    // (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    // m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    // })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    // ga('create', 'UA-59342737-4', 'auto');
+    // ga('send', 'pageview');
+  </script>
+
+</body>
+</html>
