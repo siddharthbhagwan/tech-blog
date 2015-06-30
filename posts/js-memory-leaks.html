@@ -36,12 +36,12 @@
       </div>
       <p>
         <strong>What is a memory leak?</strong><br/>
-        Failing to release a block of memory that is no longer required for a program to function correctly.
+        The memory lifecycle in any programming language can be summed up as follows; 1. Allocate memory  2. Read/Write to it  3. Deallocate memory when not required anymore. Failing to release a block of memory that is no longer required for a program to function correctly. This is not to be confused with optimization, where the code is improved upon to consume less memory.
       <p><br/>
 
       <p>
         <strong>What happens when I have one?</strong><br/>
-        Blocks of memory that should be freed - but are not - pile up and start using more resources. In time, the page starts getting noticeably slow and depending on the system configuration, the browser/server may hang, perhaps eventually crash.
+        Blocks of memory that should be freed - but are not - pile up and block resources. In time, the page starts getting noticeably slow and depending on the system configuration, the browser/server may hang, perhaps eventually crash.
       </p><br/>
 
       <p>
@@ -55,7 +55,6 @@
 
       <p>
         <strong>How does the JS GC work?</strong><br/>
-
         Once an element is not referred to by any other element, or can't be reached via a path, it is deemed no longer required, and is marked for garbage collection. With this basic principle in mind, follow this example to try and get a feel of how things actually work.
       <p>
 
@@ -125,11 +124,19 @@
 
       <p>
         <a class="jsbin-embed" href="http://jsbin.com/jetegajenu/embed?html,js,console,output">JS Bin on jsbin.com</a><script src="http://static.jsbin.com/js/embed.js"></script>
-      </p>
+      </p><br/>
 
-      <br/><p>In the next post, I shall describe more such cases, following which we'll take a look at how to avoid/handle such unintended traps.</p>
+      <p>In the <a href="js-memory-leaks-2.html" target="_blank"> next post</a>, I shall describe more such cases, following which we'll take a look at how to avoid/handle such unintended traps.</p>
 
-      <br/><p>Feel free to get back to me with any doubts or clarifications. I shall try my best to answer each one of them personally.</p>
+      <p>Feel free to get back to me with any doubts or clarifications. I shall try my best to answer each one of them personally.</p>
+
+      <p>
+        <strong>Update, 30 June 2015 : </strong>I've edited the intro to add some more context.
+      </p><br/>
+
+      <div class="back-link">
+        <a href="../../index"> &#x2190; Back</a>
+      </div>
 
       <div class="share">
         <center>Someone else might find it helpful too!</center>

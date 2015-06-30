@@ -48,3 +48,8 @@ code {
 .fb-sh {
 	color: #3b5998;
 }
+
+.back-link, .back-link a {
+	text-align: center;
+	color: #000000;
+}

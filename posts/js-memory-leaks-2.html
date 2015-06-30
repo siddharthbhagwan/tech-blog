@@ -1,0 +1,143 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+
+  <title>Memory leaks in JavaScript II</title>
+
+  <!-- css -->
+  <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"/>
+  <link rel="stylesheet" href="../css/application.css"> 
+  <link rel="stylesheet" href="../css/blogpost.css">
+  
+  <!-- js -->
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+
+  <!-- Mobile Specific Metas
+  ================================================== -->
+
+</head>
+<body>
+  <header>
+    <div class="logo-div">
+      <span class="header-text">| CoderBear's Blog |</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="col-md-10 col-md-offset-1 blogpost">
+      <div class="blogpost-title">
+        Memory leaks in JavaScript II
+      </div>
+      <div class="blogpost-date">
+        June 30, 2015
+      </div>
+
+      <p>
+        <strong>Reference counting</strong><br/>
+        A very naive garbage collection alogrithm is <em>Reference Counting</em>. In this method, the number of references to each object is tracked. If this number is 0, it means no other object is referring to it, it is not being used and hence no longer needed. It can now be garbage collected. However, this method fails when it comes to handling circular references.
+      <p><br/>
+
+      <p>
+        <strong>What is a circular reference?</strong><br/>
+         If an element A is pointing to element B, and B in turn is point directly, or indirectly to A, we have a circular reference. The reference count of neither of these elements will never be 0, and so they shall never be garbage collected. Below is an example of a circular reference in all its simplicity.
+      </p>
+
+      <p>
+        <strong>Note : </strong>No modern day browser implements Reference Counting. Garbage collectors now use variants of Mark and sweep (explained in the <a href="js-memory-leaks.html" target="_blank">previous post</a>) and are smart enough to detect and handle circular references. However, IE 6 and 7 had serious memory leaks caused by circular references. While the number of people still using IE 6/7 is extremely low, it is informative and interesting to understand such leaks and the way around them.
+      </p><br/>
+
+      <p>
+        <a class="jsbin-embed" href="http://jsbin.com/tiwevu/embed?html,js">JS Bin on jsbin.com</a><script src="http://static.jsbin.com/js/embed.min.js?3.30.3"></script>
+      </p>
+
+      <p>
+        <code>elem</code> points to <code>someElement</code> in the DOM, and <code>someElem's</code> property in turn points to <code>elem</code>. The reference count for neither of them will never be 0, and they wont be garbage collected. The property <code>someData</code> serves only to show that this memory leak might as well be an expensive one owing to the large size of the object causing the leak.
+      </p><br/>
+
+      <p>
+        <strong>Circular references and closures</strong><br/>
+        Closures are common in JavaScript and are often a source of memory leaks. Consider the snippet below.
+      </p>
+
+      <p>
+        <a class="jsbin-embed" href="http://jsbin.com/facele/embed?html,js,output">JS Bin on jsbin.com</a><script src="http://static.jsbin.com/js/embed.min.js?3.30.3"></script>
+      </p>
+
+      <p>
+        <code>elem</code> points to an element in the DOM. The <code>onclick</code> function on <code>elem</code> is a closure in reference to the <code>outerFunction</code>. Because <code>innerFunction</code> is a closure, it has access to the outer variable <code>someData</code>, and it is this implicit reference that creates a circular reference i.e, <code>elem</code> points to the DOM, and the <code>onclick</code> or the <code>innerFunction</code> function on the DOM elemement (which is a closure), points to <code>someData</code>, which is a part of <code>elem</code>.
+      </p>
+
+      <p>
+        Such code slips are quite simple and common, and in the days of IE 6/7 were quite capable of wreaking havoc on the memory given the right environment.
+      </p>
+
+      <p>
+        In the next post, we shall see what are the different ways to break/avoid circular references.
+      </p>
+
+      <p>Feel free to get back to me with any doubts or clarifications. I shall try my best to answer each one of them personally.</p><br/>
+
+      <div class="back-link">
+        <a href="../../index"> &#x2190; Back</a>
+      </div>
+
+      <div class="share">
+        <center>Someone else might find it helpful too!</center>
+        <div class="row">
+          <div class="col-md-2 col-md-offset-4 col-xs-6">
+            <a href="https://twitter.com/intent/tweet?text=Memory leaks JS II - CoderBear - http://blog.coderbear.com/posts/js-memory-leaks-2.html" target="_blank"><i class="fa fa-lg fa-twitter fa-bordered tw-sh"></i></a> Tweet
+          </div>
+
+          <div class="col-md-2 col-xs-6">
+            <a href="http://www.facebook.com/sharer/sharer.php?s=100&amp;p[url]=http://blog.coderbear.com/posts/js-memory-leaks-2.html" target="_blank"><i class="fa fa-lg fa-facebook fa-bordered fb-sh"></i></a> Post
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8 col-md-offset-2">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'coderbearblog';
+        
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </script>
+
+  <footer>
+    <div class="bottombar">
+      <div class="bottombar-innerdiv">
+        <div class="col-md-12 socialicons">
+          <ul>
+            <li><a href="https://twitter.com/siddhartha_b" target="_blank"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="mailto:siddharthabhagwan@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="https://github.com/siddharthbhagwan" target="_blank"><i class="fa fa-github"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-59342737-4', 'auto');
+    ga('send', 'pageview');
+  </script>
+
+</body>
+</html>
