@@ -11,6 +11,13 @@ code {
 	color: black;
 	font-size: 13px;
 	text-align: left;
+	border-radius: 5px;
+	background-color: #F5F5F5;
+	padding: 2px 8px;
+}
+
+comment {
+	color: #808080;
 }
 
 .blogpost-title {

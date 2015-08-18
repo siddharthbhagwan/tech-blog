@@ -1,0 +1,262 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+  <title>Dissecting a JS Library</title>
+
+  <!-- css -->
+  <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"/>
+  <link rel="stylesheet" href="../css/application.css"> 
+  <link rel="stylesheet" href="../css/blogpost.css">
+  
+  <!-- js -->
+  <script src="../js/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+
+</head>
+<body>
+  <header>
+    <div class="logo-div">
+      <div class="row header-text"><span id="header-span">CoderBear's Blog</span></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="col-md-10 col-md-offset-1 blogpost">
+      <div class="blogpost-title">
+        Dissecting a JavaScript Library I
+      </div>
+      <div class="blogpost-date">
+        Aug 18, 2015
+      </div>
+
+      <p>
+        In this series of posts, I shall be taking a simple (hopefully) library that I've used often in the past, and play around with its source code and eventually get a fair idea of how it works. 
+      </p>
+
+      <p>
+        <strong>Please note</strong> that this series is open ended and depending how this experiment goes, I shall decide how and when to wrap it up. I hope you learn something out of it.
+      </p>
+
+      <p>
+        The library I've chosen to analyse is called <a href="http://ned.im/noty" target="_blank">Noty</a>. Its a neat little notification library that I've used before. Please go through the library's <a href="http://ned.im/noty" target="_blank">home page</a> and spend a few minutes trying to understand its usage. Its simple enough, and shouldn't take more than a few minutes.
+      </p>
+
+      <p>
+        To avoid a version mis-match, I've just copied the source code of v2.3.6 into my repo, which we shall be using as a playground. You can clone it from <a href="https://github.com/siddharthbhagwan/notyPlayground" target="_blank">here</a>. Look at the <code>index.html</code> and the <code>app.js</code> files. They are simple and contain a bare minimum usage of the library, where I click a button, and a notification pops up.
+      </p><br/>
+
+      <strong>jquery.noty.packaged.js</strong>
+
+      <p>
+        It is this file that's of primary concern to us. It lies in the the <code>packaged</code> folder, where there's also the file <code>o.noty.packaged.js</code>. This is nothing but a copy of the original file, so its easy to reference it as and when we keep making changes.
+      </p>
+
+      <p>
+        On initial scan of the file, the file can roughly be split it into three sections. The first is the <code>NotyObject</code>, second is the <code>notyRenderer</code> and the third being the <code>noty</code> object itself. It is also note worthy that most of the third object <code>noty</code> seems to consist of similar code with minor changes for different layouts/positions.
+      </p>
+
+      <p>
+        As my starting point, all I know is that this command pops up a notification.
+      </p>
+
+      <p><code>var n = noty({  text: 'NOTY - a jquery notification library!' });</code></p>
+
+      <p>
+        Lets start with <code>NotyObject</code>. We reached this object by tracing the function call from line 560 where the noty function is exposed via <code>window.noty</code>, which points to line 352/355 where <code>NotyObject</code> is initalised.
+      </p><br />
+
+      <p>
+<pre>
+<comment>// Helpers</comment>
+window.noty = function noty(options) {
+    return $.notyRenderer.init(options);
+};
+</pre>
+      </p>
+
+       <p>
+<pre>
+$.notyRenderer.init = function(options) {
+
+<comment>// Renderer creates a new noty</comment>
+var notification = Object.create(NotyObject).init(options);
+.
+.
+.
+</pre>
+      </p><br/>
+
+      <p>
+        <code>NotyObject</code> contains the following methods - <code>init</code>, <code>_build</code>, <code>show</code>, <code>close</code>, <code>closeCleanUp</code>, <code>setText</code>, <code>setType</code>, <code>setTimeout</code> and <code>stopPropagation</code>. It also contains some properties - namely <code>closed</code>, <code>showing</code> and <code>shown</code>. There happens to be an underscore as a prefix for one of the method names. This by convention means that <code>_build</code> is a non public method, and will be called internally by some other method.
+      </p>
+
+      <p>
+        Looking at the method names, logic dictates that the path of execution of the methods is likely to be - initialize (<code>init</code>), <code>build</code> and then <code>show</code>, followed by <code>close</code> and <code>closeCleanup</code>.
+      </p>
+
+      <p>
+        The scope of this post shall be to focus on the first method, <code>init</code>. As the comment explains, init is going to take any user given options and fill in any missing or unspecified parameters with the default object, which it will then pass on to <code>_build</code>. Technically, if I call on noty with no parameters, and comment out all of <code>init</code>'s code that mixes the user specified params with the default ones, this library should still function and will running <em>entirely</em> on its default parameters.
+      </p>
+
+      <p>
+        Let us look for the default object . It is declared further down the file on line 520 called <code>$.noty.defaults</code>, and shall be the reference point for all the default properties.
+      </p><br/>
+
+      <p>
+<pre>
+<comment>// jquery.noty.packaged.js,</comment>
+
+init: function(options) {
+
+    <comment>// Mix in the passed in options with the default options</comment>
+    this.options = $.extend({}, $.noty.defaults, options);
+
+    <comment>// if not a custom layout, replace the layout name, </comment>
+    <comment>// with the layout object matching the name in the $.noty object</comment>
+    this.options.layout = (this.options.custom) ? $.noty.layouts['inline'] : $.noty.layouts[this.options.layout];
+
+    <comment>// if given layout exists, replace the theme with the object</comment>
+    <comment>// matching the theme name in the $.noty object</comment>
+    if($.noty.themes[this.options.theme])
+        this.options.theme = $.noty.themes[this.options.theme];
+    else
+        options.themeClassName = this.options.theme;
+
+    <comment>// delete layout and theme passed in options</comment>
+    delete options.layout;
+    delete options.theme;
+
+    <comment>// over ride options with options of the layout object</comment>
+    this.options = $.extend({}, this.options, this.options.layout.options);
+
+    <comment>// add id for the noty object</comment>
+    this.options.id = 'noty_' + (new Date().getTime() * Math.floor(Math.random() * 1000000));
+
+    <comment>// add back any user options that might have been over ridden</comment>
+    this.options = $.extend({}, this.options, options);
+
+    <comment>// Build the noty dom initial structure</comment>
+    this._build();
+
+    <comment>// return this so we can chain/use the bridge with less code.</comment>
+    return this;
+}, <comment>// end init</comment>
+</pre>
+      </p><br/>
+
+      <p>
+        The <code>app.js</code> file containes the line <code>debugger</code>, which can be uncommented incase you want to follow the path of execution and check the status of the variables in the stack at each level in the console.
+      </p>
+
+      <p>
+        In the next post, we shall continue to analyse a few more functions and get a clearer understadning of certain high level as well as implementation specifics.
+      </p>
+
+      <p>Feel free to get back to me with any doubts or clarifications. I shall try my best to answer each one of them personally.</p><br/>
+
+      <div class="back-link">
+        <a href="../../index"> &#x2190; Back</a>
+      </div>
+
+      <div class="share">
+        <center>Someone else might find it helpful too!</center>
+        <div class="row">
+          <div class="col-md-2 col-md-offset-4 col-xs-6">
+            <a href="https://twitter.com/intent/tweet?text=Dissecting a JS library - CoderBear - http://blog.coderbear.com/posts/js-dissecting-a-lib.html" target="_blank"><i class="fa fa-lg fa-twitter fa-bordered tw-sh"></i></a> Tweet
+          </div>
+
+          <div class="col-md-2 col-xs-6">
+            <a href="http://www.facebook.com/sharer/sharer.php?s=100&amp;p[url]=http://blog.coderbear.com/posts/js-dissecting-a-lib.html" target="_blank"><i class="fa fa-lg fa-facebook fa-bordered fb-sh"></i></a> Post
+          </div>
+        </div>
+      </div>
+
+      <br/>
+
+      <!-- Begin MailChimp Signup Form -->
+      <link href="//cdn-images.mailchimp.com/embedcode/classic-081711.css" rel="stylesheet" type="text/css">
+      <style type="text/css">
+        .mc-field-group { border-radius: 10px; padding-bottom: 0px !important; }
+        .mc-field-group input { width: 75% !important; display: inline; }
+        .mc-custom-txt { font-size: 12px; margin-bottom: 5px; }
+        #mce-EMAIL { border-radius: 5px; border: 1px solid #DDDDDD !important; width: auto; }
+        #mc_embed_signup { background-color: #F8F8F8; border-radius: 5px; }
+        /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+           We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+      </style>
+      <div id="mc_embed_signup">
+        <form action="//coderbear.us11.list-manage.com/subscribe/post?u=ce8bfd381f7f35db4f414f92e&amp;id=8bc964c25e" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+          <div id="mc_embed_signup_scroll">
+
+            <h3>Receive my blogs in your email. <strong>Subscribe</strong>.</h3>
+
+            <div class="mc-field-group">
+              <input type="email" value="" name="EMAIL" placeholder="Enter your email address here" class="required email" id="mce-EMAIL">
+            </div>
+
+            <div id="mce-responses" class="clear">
+              <div class="response" id="mce-error-response" style="display:none"></div>
+              <div class="response" id="mce-success-response" style="display:none"></div>
+            </div><!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+
+            <div style="position: absolute; left: -5000px;">
+              <input type="text" name="b_ce8bfd381f7f35db4f414f92e_8bc964c25e" tabindex="-1" value="">
+            </div>
+
+            <div class="mc-custom-txt">Only Javascript. <strong>No Spam</strong>. Promise.</div>
+
+            <div class="clear">
+              <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
+            </div>
+          </div>
+        </form>
+      </div>
+      <!--End mc_embed_signup-->
+
+    </div>
+  </div>
+
+  <div class="col-md-8 col-md-offset-2">
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = 'coderbearblog';
+        
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  </script>
+
+  <footer>
+    <div class="bottombar">
+      <div class="bottombar-innerdiv">
+        <div class="col-md-12 socialicons">
+          <ul>
+            <li><a href="https://twitter.com/siddhartha_b" target="_blank"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="mailto:siddharthabhagwan@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a></li>
+            <li><a href="https://github.com/siddharthbhagwan" target="_blank"><i class="fa fa-github"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-59342737-4', 'auto');
+    ga('send', 'pageview');
+  </script>
+
+</body>
+</html>
