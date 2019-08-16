@@ -1,142 +1,223 @@
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-  <title>CoderBear's Blog</title>
+    <title>CoderBear's Blog</title>
 
-  <!-- css -->
-  <link type="text/css" rel="stylesheet" href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"/>
-  <link rel="stylesheet" href="css/application.css">
-  <link rel="stylesheet" href="css/blogarchive.css">
-  
-  <!-- js -->
-  <script src="js/jquery.min.js"></script>
-  <script src="js/bootstrap.min.js"></script>
+    <!-- css -->
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="http://fast.fonts.net/cssapi/a6555b0e-9541-40d2-ab30-147c200fd4db.css"
+    />
+    <link rel="stylesheet" href="css/application.css" />
+    <link rel="stylesheet" href="css/blogarchive.css" />
 
-</head>
-<body>
-  <div class="page-wrap">
-    <header>
-      <div class="logo-div">
-        <div class="row header-text"><span id="header-span">CoderBear's Blog</span></div>
-        <div class="row"><a href="http://coderbear.com"><i class="fa fa-home"></i></a></div>
-      </div>
-    </header>
-
-    <div class="container">
-      <div class="col-md-10 col-md-offset-1 blogarchive">
-
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/design-twitter-search"> Usability analysis of Twitter's search bar</a>
+    <!-- js -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <header>
+        <div class="logo-div">
+          <div class="row header-text">
+            <span id="header-span">CoderBear's Blog</span>
           </div>
-          <div class="blogarchive-date">
-            Nov 12, 2016
-          </div>
-          <div class="blogpost-desc">
-            For my design class, I assessed the usability of Twitter's search bar for its mobile app as well as the desktop site. The post is a summary of my findings and ways in which to tackle this problem.
+          <div class="row">
+            <a href="http://coderbear.com"><i class="fa fa-home"></i></a>
           </div>
         </div>
+      </header>
 
-        <br/>
+      <div class="container">
+        <div class="col-md-10 col-md-offset-1 blogarchive">
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a
+                target="_blank"
+                href="https://medium.com/@siddhartha_b/experience-design-at-coldplay-3ea4e4cbfd68"
+              >
+                Experience design at Coldplay</a
+              >
+            </div>
+            <div class="blogarchive-date">
+              Sep 15, 2017
+            </div>
+            <div class="blogpost-desc">
+              I recently had the chance of watching Coldplay perform live in
+              concert as a part of their A Head Full of Dreams tour at the
+              FedExField in Maryland, USA. Below are my thoughts on how they do
+              a brilliant job of connecting with their fans.
+            </div>
+          </div>
 
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/js-dissecting-a-lib"> Dissecting a JavaScript Library</a>
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/design-twitter-search">
+                Usability analysis of Twitter's search bar</a
+              >
+            </div>
+            <div class="blogarchive-date">
+              Nov 12, 2016
+            </div>
+            <div class="blogpost-desc">
+              For my design class, I assessed the usability of Twitter's search
+              bar for its mobile app as well as the desktop site. The post is a
+              summary of my findings and ways in which to tackle this problem.
+            </div>
           </div>
-          <div class="blogarchive-date">
-            Aug 18, 2015
+
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/js-dissecting-a-lib">
+                Dissecting a JavaScript Library</a
+              >
+            </div>
+            <div class="blogarchive-date">
+              Aug 18, 2015
+            </div>
+            <div class="blogpost-desc">
+              In this series of posts, I shall be taking a simple (hopefully)
+              library that I've used often in the past, and play around with its
+              source code and eventually get a fair idea of how it works.
+            </div>
           </div>
-          <div class="blogpost-desc">
-            In this series of posts, I shall be taking a simple (hopefully) library that I've used often in the past, and play around with its source code and eventually get a fair idea of how it works.
+
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/js-memory-leaks-3">
+                Memory leaks in JavaScript III</a
+              >
+            </div>
+            <div class="blogarchive-date">
+              July 6, 2015
+            </div>
+            <div class="blogpost-desc">
+              There are a number of ways in which circular references can be
+              broken, depending on what is suitable for a particular use
+              case....
+            </div>
           </div>
+
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/js-memory-leaks-2">
+                Memory leaks in JavaScript II</a
+              >
+            </div>
+            <div class="blogarchive-date">
+              July 1, 2015
+            </div>
+            <div class="blogpost-desc">
+              A very naive garbage collection alogrithm is Reference Counting.
+              In this method, the number of references to each object is
+              tracked. If this number ....
+            </div>
+          </div>
+
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/js-memory-leaks"> Memory leaks in JavaScript</a>
+            </div>
+            <div class="blogarchive-date">
+              June 22, 2015
+            </div>
+            <div class="blogpost-desc">
+              Failing to release a block of memory that is no longer required
+              for a program to function correctly is known as a memory leak.
+              Over time, they pile up and start using more resources. Depending
+              on ....
+            </div>
+          </div>
+
+          <br />
+
+          <div class="blogarchive-post">
+            <div class="blogarchive-title">
+              <i class="fa fa-pencil blogpost-pointer"> </i>
+              <a href="posts/js-scope"> Understanding scope in JavaScript</a>
+            </div>
+            <div class="blogarchive-date">
+              June 5, 2015
+            </div>
+            <div class="blogpost-desc">
+              Let us try and better understand how scoping works in javascript.
+              Scope in JS is functional, which means that a variable declared
+              within the scope of a function is accessible only ....
+            </div>
+          </div>
+
+          <br />
         </div>
-
-        <br/>
-
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/js-memory-leaks-3"> Memory leaks in JavaScript III</a>
-          </div>
-          <div class="blogarchive-date">
-            July 6, 2015
-          </div>
-          <div class="blogpost-desc">
-            There are a number of ways in which circular references can be broken, depending on what is suitable for a particular use case....
-          </div>
-        </div>
-
-        <br />
-
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/js-memory-leaks-2"> Memory leaks in JavaScript II</a>
-          </div>
-          <div class="blogarchive-date">
-            July 1, 2015
-          </div>
-          <div class="blogpost-desc">
-            A very naive garbage collection alogrithm is Reference Counting. In this method, the number of references to each object is tracked. If this number ....
-          </div>
-        </div>
-
-        <br/>
-
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/js-memory-leaks"> Memory leaks in JavaScript</a>
-          </div>
-          <div class="blogarchive-date">
-            June 22, 2015
-          </div>
-          <div class="blogpost-desc">
-            Failing to release a block of memory that is no longer required for a program to function correctly is known as a memory leak. Over time, they pile up and start using more resources. Depending on ....
-          </div>
-        </div>
-
-        <br/>
-
-        <div class="blogarchive-post">
-          <div class="blogarchive-title">
-            <i class="fa fa-pencil blogpost-pointer"> </i> <a href="posts/js-scope"> Understanding scope in JavaScript</a>
-          </div>
-          <div class="blogarchive-date">
-            June 5, 2015
-          </div>
-          <div class="blogpost-desc">
-            Let us try and better understand how scoping works in javascript. Scope in JS is functional, which means that a variable declared within the scope of a function is accessible only ....
-          </div>
-        </div>
-
-        <br/>  
-
       </div>
     </div>
-  </div>
 
-  <footer class="Sticky-footer">
-    <div class="bottombar">
-      <div class="bottombar-innerdiv">
-        <div class="col-md-12 socialicons">
-          <ul>
-            <li><a href="https://twitter.com/siddhartha_b" target="_blank"><i class="fa fa-twitter"></i></a></li>
-            <li><a href="mailto:siddharthabhagwan@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a></li>
-            <li><a href="https://github.com/siddharthbhagwan" target="_blank"><i class="fa fa-github"></i></a></li>
-          </ul>
+    <footer class="Sticky-footer">
+      <div class="bottombar">
+        <div class="bottombar-innerdiv">
+          <div class="col-md-12 socialicons">
+            <ul>
+              <li>
+                <a href="https://twitter.com/siddhartha_b" target="_blank"
+                  ><i class="fa fa-twitter"></i
+                ></a>
+              </li>
+              <li>
+                <a href="mailto:siddharthabhagwan@gmail.com" target="_blank"
+                  ><i class="fa fa-envelope"></i
+                ></a>
+              </li>
+              <li>
+                <a href="https://github.com/siddharthbhagwan" target="_blank"
+                  ><i class="fa fa-github"></i
+                ></a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </footer>
+    </footer>
 
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-59342737-4', 'auto');
-    ga('send', 'pageview');
-  </script>
-
-</body>
+    <script>
+      (function(i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function() {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(
+        window,
+        document,
+        "script",
+        "//www.google-analytics.com/analytics.js",
+        "ga"
+      );
+      ga("create", "UA-59342737-4", "auto");
+      ga("send", "pageview");
+    </script>
+  </body>
 </html>
